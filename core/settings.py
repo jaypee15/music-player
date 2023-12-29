@@ -8,17 +8,16 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env")
+load_dotenv()
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-*4&!jp2&yu)8dcb_064(=dnq(g7v!zqx^=+*u#tz11g1w*o1*d"
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-
-DEBUG = os.getenv("DEBUG", "0").lower() in ["true", "t", "1"]
+DEBUG =  bool(os.getenv("DEBUG"))
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOST").split(" ")
+
 
 
 # Application definition
@@ -152,11 +151,15 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 
-SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT")
+SECURE_SSL_REDIRECT = bool(os.getenv("DJANGO_SECURE_SSL_REDIRECT"))
+SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_SECURE_HSTS_SECONDS"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(os.getenv("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS"))
+SECURE_HSTS_PRELOAD = bool(os.getenv("DJANGO_SECURE_HSTS_PRELOAD"))
 
-SECURE_HSTS_SECONDS = os.getenv("DJANGO_SECURE_HSTS_SECONDS")
-SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS")
-SECURE_HSTS_PRELOAD = os.getenv("DJANGO_SECURE_HSTS_PRELOAD")
+SESSION_COOKIE_SECURE = bool(os.getenv("DJANGO_SESSION_COOKIE_SECURE"))
+CSRF_COOKIE_SECURE = bool(os.getenv("DJANGO_CSRF_COOKIE_SECURE"))
 
-SESSION_COOKIE_SECURE = os.getenv("DJANGO_SESSION_COOKIE_SECURE")
-CSRF_COOKIE_SECURE = os.getenv("DJANGO_CSRF_COOKIE_SECURE")
+
+print(SECURE_SSL_REDIRECT)
+print(SECURE_HSTS_SECONDS)
+
