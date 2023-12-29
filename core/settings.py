@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 from dotenv import load_dotenv
 
@@ -15,9 +16,9 @@ SECRET_KEY = "django-insecure-*4&!jp2&yu)8dcb_064(=dnq(g7v!zqx^=+*u#tz11g1w*o1*d
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 
-DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+DEBUG = os.getenv("DEBUG", "0").lower() in ["true", "t", "1"]
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOST').split(' ')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOST").split(" ")
 
 
 # Application definition
@@ -33,15 +34,16 @@ INSTALLED_APPS = [
     # Third part
     "crispy_forms",
     "crispy_tailwind",
-    "allauth", 
+    "allauth",
     "allauth.account",
     # Local
     "accounts.apps.AccountsConfig",
-    "player.apps.PlayerConfig"
+    "player.apps.PlayerConfig",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -76,12 +78,10 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"), conn_max_age=600, conn_health_checks=True
+    ),
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -120,7 +120,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -134,17 +137,26 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
 # django-allauth config
-SITE_ID = 1 
+SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
-"django.contrib.auth.backends.ModelBackend",
-"allauth.account.auth_backends.AuthenticationBackend", 
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGIN_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_REDIRECT = "index"
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-ACCOUNT_USERNAME_REQUIRED = False 
-ACCOUNT_AUTHENTICATION_METHOD = "email" 
-ACCOUNT_EMAIL_REQUIRED = True 
-ACCOUNT_UNIQUE_EMAIL = True 
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+
+SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT")
+
+SECURE_HSTS_SECONDS = os.getenv("DJANGO_SECURE_HSTS_SECONDS")
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS")
+SECURE_HSTS_PRELOAD = os.getenv("DJANGO_SECURE_HSTS_PRELOAD")
+
+SESSION_COOKIE_SECURE = os.getenv("DJANGO_SESSION_COOKIE_SECURE")
+CSRF_COOKIE_SECURE = os.getenv("DJANGO_CSRF_COOKIE_SECURE")
